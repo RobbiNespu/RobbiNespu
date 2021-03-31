@@ -26,5 +26,7 @@ Here are some ideas to get you started:
   <br><br>
   <a href="https://github.com/robbinespu">
     <img src="https://badges.pufler.dev/commits/yearly/robbinespu?style=flat-square&color=green&logo=github">
+    <img src="https://badges.pufler.dev/commits/monthly/robbinespu?style=flat-square&color=green&logo=github">
+    <img src="https://badges.pufler.dev/commits/daily/robbinespu?style=flat-square&color=green&logo=github">
   </a>
 </p>
