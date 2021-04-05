@@ -30,4 +30,6 @@ Here are some ideas to get you started:
   </a>
 </p>
 
+<p align="center">
 <img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=robbinespu&hide=javascript,html,css,vue,typescript,emacs%20lisp,go&layout=compact&langs_count=10" alt="Github Stats" />
+</p>
