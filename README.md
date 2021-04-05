@@ -27,6 +27,7 @@ Here are some ideas to get you started:
   <a href="https://github.com/robbinespu">
     <img src="https://badges.pufler.dev/commits/yearly/robbinespu?style=flat-square&color=green&logo=github">
     <img src="https://badges.pufler.dev/commits/monthly/robbinespu?style=flat-square&color=green&logo=github">
-    <img src="https://badges.pufler.dev/commits/daily/robbinespu?style=flat-square&color=green&logo=github">
   </a>
 </p>
+
+<img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=robbinespu&hide=javascript,html,css,vue,typescript,emacs%20lisp,go&layout=compact&langs_count=10" alt="Github Stats" />
