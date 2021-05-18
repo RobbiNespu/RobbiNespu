@@ -18,13 +18,9 @@ Here are some ideas to get you started:
 ### Check out my statistics below! but don't use it to evaluate me!
 ![](https://github-readme-stats.vercel.app/api?username=robbinespu&title_color=222&text_color=777)
 
+![](https://badges.pufler.dev/commits/yearly/robbinespu?style=flat-square&color=green&logo=github)
+![](https://badges.pufler.dev/commits/monthly/robbinespu?style=flat-square&color=green&logo=github)
 
-<p align="center">
-  <a href="https://github.com/robbinespu">
-    <img src="https://badges.pufler.dev/commits/yearly/robbinespu?style=flat-square&color=green&logo=github">
-    <img src="https://badges.pufler.dev/commits/monthly/robbinespu?style=flat-square&color=green&logo=github">
-  </a>
-</p>
 
 
 <p align="center">
