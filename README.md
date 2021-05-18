@@ -15,13 +15,9 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 
-<p align="center">
-  <strong>Check out my statistics below! but don't use it to evaluate me!</strong>
-  <br><br>
-  <a href="httphttps://github.com/RobbiNespu/programming-principless://github.com/robbinespu">
-    <img src="https://github-readme-stats.vercel.app/api?username=robbinespu&title_color=222&text_color=777">
-  </a>
-</p>
+### Check out my statistics below! but don't use it to evaluate me!
+![](https://github-readme-stats.vercel.app/api?username=robbinespu&title_color=222&text_color=777)
+
 
 <p align="center">
   <a href="https://github.com/robbinespu">
