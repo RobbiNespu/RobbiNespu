@@ -16,14 +16,14 @@ Here are some ideas to get you started:
 -->
 
 <p align="center">
-  <a href="https://github.com/robbinespu">
+  <strong>Check out my statistics below! but don't use it to evaluate me!</strong>
+  <br><br>
+  <a href="httphttps://github.com/RobbiNespu/programming-principless://github.com/robbinespu">
     <img src="https://github-readme-stats.vercel.app/api?username=robbinespu&title_color=222&text_color=777">
   </a>
 </p>
 
 <p align="center">
-  <strong>Check out my work below!</strong>
-  <br><br>
   <a href="https://github.com/robbinespu">
     <img src="https://badges.pufler.dev/commits/yearly/robbinespu?style=flat-square&color=green&logo=github">
     <img src="https://badges.pufler.dev/commits/monthly/robbinespu?style=flat-square&color=green&logo=github">
@@ -32,4 +32,8 @@ Here are some ideas to get you started:
 
 <p align="center">
 <img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=robbinespu&hide=javascript,html,css,vue,typescript,emacs%20lisp,go&layout=compact&langs_count=10" alt="Github Stats" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/RobbiNespu/programming-principles">Programming principle</a> / 
 </p>
