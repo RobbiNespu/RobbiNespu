@@ -30,12 +30,14 @@ Here are some ideas to get you started:
   </a>
 </p>
 
+
 <p align="center">
 <img align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=robbinespu&hide=javascript,html,css,vue,typescript,emacs%20lisp,go&layout=compact&langs_count=10" alt="Github Stats" />
 </p>
 
-<p align="center">
-  Principle: <a href="https://github.com/RobbiNespu/programming-principles">Programming principle</a> /  <a href="https://github.com/RobbiNespu/java-design-patterns">Design pattern</a>
-  <br>
-  Roadmap: <a href="https://github.com/RobbiNespu/java-developer-roadmap">Java</a>
-</p>
+
+|Name          | Collections   |
+|--------------|----------------
+|Principle     | - [Programming principle](https://github.com/RobbiNespu/programming-principles)
+|Pattern       | - [Java design patter](https://github.com/RobbiNespu/java-design-patterns)
+|Roadmap       | - [Java developer roadmap](https://github.com/RobbiNespu/java-developer-roadmap)
