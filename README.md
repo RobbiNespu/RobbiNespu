@@ -20,7 +20,7 @@ Here are some ideas to get you started:
 
 ![](https://badges.pufler.dev/commits/yearly/robbinespu?style=flat-square&color=green&logo=github)
 ![](https://badges.pufler.dev/commits/monthly/robbinespu?style=flat-square&color=green&logo=github)
-
+![](https://badges.pufler.dev/commits/weekly/robbinespu?style=flat-square&color=green&logo=github)
 
 
 <p align="center">
