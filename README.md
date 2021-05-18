@@ -12,5 +12,5 @@
 |Name          | Collections   |
 |--------------|----------------
 |Principle     | - [Programming principle](https://github.com/RobbiNespu/programming-principles)
-|Pattern       | - [Java design patter](https://github.com/RobbiNespu/java-design-patterns)
+|Pattern       | - [Java design pattern](https://github.com/RobbiNespu/java-design-patterns)
 |Roadmap       | - [Java developer](https://github.com/RobbiNespu/java-developer-roadmap)<br> - [Quality Assurance](https://github.com/RobbiNespu/Quality-Assurance-Road-Map)
