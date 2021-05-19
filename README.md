@@ -1,5 +1,5 @@
 
-### Check out my statistics below! but don't use it to evaluate me!
+### Check out my statistics below!
 ![](https://github-readme-stats.vercel.app/api?username=robbinespu&title_color=222&text_color=777)
 
 ![](https://badges.pufler.dev/commits/yearly/robbinespu?style=flat-square&color=green&logo=github)
@@ -13,4 +13,4 @@
 |--------------|----------------
 |Principle     | - [Programming principle](https://github.com/RobbiNespu/programming-principles)
 |Pattern       | - [Java design pattern](https://github.com/RobbiNespu/java-design-patterns)
-|Roadmap       | - [Java developer](https://github.com/RobbiNespu/java-developer-roadmap)<br> - [Quality Assurance](https://github.com/RobbiNespu/Quality-Assurance-Road-Map)<br> - [Machine leariing](https://github.com/josephmisiti/awesome-machine-learning)
+|Roadmap       | - [Java developer](https://github.com/RobbiNespu/java-developer-roadmap)<br> - [Quality Assurance](https://github.com/RobbiNespu/Quality-Assurance-Road-Map)<br> - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning)
