@@ -1,3 +1,5 @@
+[![GitHub](https://img.shields.io/github/followers/robbinespu.svg?style=social&label=Follow%20@robbinespu)](https://github.com/robbinespu) 
+[![Twitter](https://img.shields.io/twitter/follow/robbinespu.svg?style=social)](https://twitter.com/robbinespu)
 
 ### Check out my statistics below!
 ![](https://github-readme-stats.vercel.app/api?username=robbinespu&title_color=222&text_color=777)
