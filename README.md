@@ -16,5 +16,5 @@
 |Principle     | - [Programming principle](https://github.com/RobbiNespu/programming-principles)
 |Pattern       | - [Java design pattern](https://github.com/RobbiNespu/java-design-patterns)
 |Roadmap       | - [Java developer](https://github.com/RobbiNespu/java-developer-roadmap)<br> - [Quality Assurance](https://github.com/RobbiNespu/Quality-Assurance-Road-Map)<br> 
-|Awesome       | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml)
 |Documentation | - [IEEE](https://github.com/RobbiNespu/IEEE/) <br> - [README template](https://github.com/RobbiNespu/readmine)
+|Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner buglist issues](https://github.com/MunGell/awesome-for-beginners)
