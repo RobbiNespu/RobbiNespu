@@ -10,11 +10,12 @@
 
 ![](https://github-readme-stats.vercel.app/api/top-langs/?username=robbinespu&hide=javascript,html,css,vue,typescript,emacs%20lisp,go&layout=compact&langs_count=10)
 
-
+### Personal quick references / bookmarks
 |Name          | Collections   |
 |--------------|----------------
 |Principle     | - [Programming principle](https://github.com/RobbiNespu/programming-principles)
 |Pattern       | - [Java design pattern](https://github.com/RobbiNespu/java-design-patterns)
 |Roadmap       | - [Java developer](https://github.com/RobbiNespu/java-developer-roadmap)<br> - [Quality Assurance](https://github.com/RobbiNespu/Quality-Assurance-Road-Map)<br> 
 |Documentation | - [IEEE](https://github.com/RobbiNespu/IEEE/) <br> - [README template](https://github.com/RobbiNespu/readmine)
+|Papers        | - [Best Paper Awards in Computer Science (since 1996)](https://jeffhuang.com/best_paper_awards/)
 |Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner (issues)](https://github.com/MunGell/awesome-for-beginners) <br> - [Math](https://github.com/RobbiNespu/awesome-math)
