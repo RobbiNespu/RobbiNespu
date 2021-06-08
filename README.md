@@ -19,4 +19,4 @@
 |Documentation | - [IEEE](https://github.com/RobbiNespu/IEEE/) <br> - [README template](https://github.com/RobbiNespu/readmine)
 |Papers        | - [Best Paper Awards in Computer Science (since 1996)](https://jeffhuang.com/best_paper_awards/)
 |Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner (issues)](https://github.com/MunGell/awesome-for-beginners) <br> - [Math](https://github.com/RobbiNespu/awesome-math)
-| Others       | - [Movies for nerds](https://github.com/RobbiNespu/movies-for-hackers)
+| Others       | - [Papers we love](https://github.com/RobbiNespu/papers-we-love/tree/master) <br> - [Movies for nerds](https://github.com/RobbiNespu/movies-for-hackers)
