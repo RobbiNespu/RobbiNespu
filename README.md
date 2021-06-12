@@ -13,7 +13,7 @@
 ### Personal quick references / bookmarks
 |Name          | Collections   |
 |--------------|----------------
-|Principle     | - [Programming principle](https://github.com/RobbiNespu/programming-principles)
+|Principle / Practice     | - [Programming principle](https://github.com/RobbiNespu/programming-principles) <br> - [Google engineering practices](https://github.com/RobbiNespu/google-engineering-practices)
 |Pattern       | - [Java design pattern](https://github.com/RobbiNespu/java-design-patterns)
 |Roadmap       | - [Java developer](https://github.com/RobbiNespu/java-developer-roadmap)<br> - [Quality Assurance](https://github.com/RobbiNespu/Quality-Assurance-Road-Map)<br> 
 |Documentation | - [IEEE](https://github.com/RobbiNespu/IEEE/) <br> - [README template](https://github.com/RobbiNespu/readmine)
