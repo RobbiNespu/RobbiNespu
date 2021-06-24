@@ -24,5 +24,6 @@
 |Roadmap       | - [Java developer](https://github.com/RobbiNespu/java-developer-roadmap)<br> - [Quality Assurance](https://github.com/RobbiNespu/Quality-Assurance-Road-Map)<br> 
 |Documentation | - [IEEE](https://github.com/RobbiNespu/IEEE/) <br> - [README template](https://github.com/RobbiNespu/readmine)
 |Papers        | - [Best Paper Awards in Computer Science (since 1996)](https://jeffhuang.com/best_paper_awards/)
+|License       | - [Choose a license (appendix)](https://choosealicense.com/appendix/)
 |Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner (issues)](https://github.com/MunGell/awesome-for-beginners) <br> - [Math](https://github.com/RobbiNespu/awesome-math)
 | Others       | - [Papers we love](https://github.com/RobbiNespu/papers-we-love/tree/master) <br> - [Movies for nerds](https://github.com/RobbiNespu/movies-for-hackers)
