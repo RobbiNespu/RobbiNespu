@@ -15,6 +15,12 @@
 <a><img src="https://camo.githubusercontent.com/054d61cd31741a3b99b9734490fb4d2d9ae87388b853844ed5897176bfb5452f/68747470733a2f2f6261646765732e7075666c65722e6465762f636f6d6d6974732f7765656b6c792f726f6262696e657370753f7374796c653d666c61742d73717561726526636f6c6f723d677265656e266c6f676f3d676974687562" alt="" data-canonical-src="https://badges.pufler.dev/commits/weekly/robbinespu?style=flat-square&amp;color=green&amp;logo=github" style="max-width:100%;"></a>
 </p>
 
+### Dissertation
+| Name | Repository |
+|------|-------|
+| Proposal | - https://github.com/RobbiNespu/disertation-proposal |
+| Dataset | - https://github.com/RobbiNespu/disertation-dataset |
+| Implementation | - https://github.com/RobbiNespu/disertation-codes |
 
 ### Personal quick references / bookmarks
 |Name          | Collections   |
