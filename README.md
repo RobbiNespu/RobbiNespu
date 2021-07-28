@@ -21,6 +21,7 @@
 | Proposal | - https://github.com/RobbiNespu/disertation-proposal |
 | Dataset | - https://github.com/RobbiNespu/disertation-dataset |
 | Implementation | - https://github.com/RobbiNespu/disertation-codes |
+| Others | - [A good looking 2 column template](https://github.com/RobbiNespu/preprint-template.tex)
 
 ### Personal quick references / bookmarks
 |Name          | Collections   |
