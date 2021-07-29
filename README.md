@@ -17,6 +17,7 @@
 
 <details>
 <summary>📂 Click to expand a full list </summary>
+  
 ### Dissertation
 | Name | Repository |
 |------|-------|
