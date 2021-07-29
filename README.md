@@ -15,6 +15,8 @@
 <a><img src="https://camo.githubusercontent.com/054d61cd31741a3b99b9734490fb4d2d9ae87388b853844ed5897176bfb5452f/68747470733a2f2f6261646765732e7075666c65722e6465762f636f6d6d6974732f7765656b6c792f726f6262696e657370753f7374796c653d666c61742d73717561726526636f6c6f723d677265656e266c6f676f3d676974687562" alt="" data-canonical-src="https://badges.pufler.dev/commits/weekly/robbinespu?style=flat-square&amp;color=green&amp;logo=github" style="max-width:100%;"></a>
 </p>
 
+<details>
+<summary>📂 Click to expand a full list </summary>
 ### Dissertation
 | Name | Repository |
 |------|-------|
@@ -34,3 +36,5 @@
 |License       | - [Choose a license (appendix)](https://choosealicense.com/appendix/)
 |Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner (issues)](https://github.com/MunGell/awesome-for-beginners) <br> - [Math](https://github.com/RobbiNespu/awesome-math) <br> - [Coding interview](https://github.com/RobbiNespu/coding-interview-university)
 | Others       |  - [Movies for nerds](https://github.com/RobbiNespu/movies-for-hackers) <br> - [Anime for nerds](https://github.com/RobbiNespu/anime-for-dev) <br> - [Git stalk](https://gitstalk.netlify.app/robbinespu) <br> - [VPN IPsec (setup)](https://github.com/RobbiNespu/setup-ipsec-vpn) <br> - [TeX FAQ](https://github.com/RobbiNespu/texfaq.github.io) <br> - [Hosts blackhole](https://github.com/RobbiNespu/blackhosts) <br> - [Create Diagrams That Look Like Hand-drawn](https://excalidraw.com/)
+
+ <details>
