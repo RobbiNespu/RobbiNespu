@@ -38,4 +38,4 @@
 |Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner (issues)](https://github.com/MunGell/awesome-for-beginners) <br> - [Math](https://github.com/RobbiNespu/awesome-math) <br> - [Coding interview](https://github.com/RobbiNespu/coding-interview-university)
 | Others       |  - [Movies for nerds](https://github.com/RobbiNespu/movies-for-hackers) <br> - [Anime for nerds](https://github.com/RobbiNespu/anime-for-dev) <br> - [Git stalk](https://gitstalk.netlify.app/robbinespu) <br> - [VPN IPsec (setup)](https://github.com/RobbiNespu/setup-ipsec-vpn) <br> - [TeX FAQ](https://github.com/RobbiNespu/texfaq.github.io) <br> - [Hosts blackhole](https://github.com/RobbiNespu/blackhosts) <br> - [Create Diagrams That Look Like Hand-drawn](https://excalidraw.com/)
 
- <details>
+ </details>
