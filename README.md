@@ -18,7 +18,7 @@
 <details>
 <summary>📂 Click to expand a full list </summary>
   
-### Dissertation
+### Dissertation (Private)
 | Name | Repository |
 |------|-------|
 | Proposal | - https://github.com/RobbiNespu/disertation-proposal |
@@ -26,7 +26,7 @@
 | Implementation | - https://github.com/RobbiNespu/disertation-codes |
 | Others | - [A good looking 2 column template](https://github.com/RobbiNespu/preprint-template.tex)
 
-### Personal quick references / bookmarks
+### Personal quick references / bookmarks (Public)
 |Name          | Collections   |
 |--------------|----------------
 |Principle / Practice     | - [Programming principle](https://github.com/RobbiNespu/programming-principles) <br> - [Google engineering practices](https://github.com/RobbiNespu/google-engineering-practices)
@@ -35,7 +35,7 @@
 |Documentation | - [IEEE](https://github.com/RobbiNespu/IEEE/) <br> - [README template](https://github.com/RobbiNespu/readmine)
 |Papers        | - [Papers we love](https://github.com/RobbiNespu/papers-we-love/tree/master) <br> - [Best Paper Awards in Computer Science (since 1996)](https://jeffhuang.com/best_paper_awards/) <br> - [GNN(Graph Neural Network)](https://github.com/RobbiNespu/GNNPapers) <br> - [Fault localization](https://github.com/RobbiNespu/SE-Papers/blob/master/Localization) <br> - [Program Repair](https://github.com/RobbiNespu/SE-Papers/blob/master/Repair) <br> - [Program Synthesis](https://github.com/RobbiNespu/SE-Papers/blob/master/Synthesis)
 |License       | - [Choose a license (appendix)](https://choosealicense.com/appendix/)
-|Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner (issues)](https://github.com/MunGell/awesome-for-beginners) <br> - [Math](https://github.com/RobbiNespu/awesome-math) <br> - [Coding interview](https://github.com/RobbiNespu/coding-interview-university)
+|Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner (issues)](https://github.com/MunGell/awesome-for-beginners) <br> - [Math](https://github.com/RobbiNespu/awesome-math) <br> - [Coding interview](https://github.com/RobbiNespu/coding-interview-university) <br> - [Stock resources](https://github.com/RobbiNespu/awesome-stock-resources_
 | Others       |  - [Movies for nerds](https://github.com/RobbiNespu/movies-for-hackers) <br> - [Anime for nerds](https://github.com/RobbiNespu/anime-for-dev) <br> - [Git stalk](https://gitstalk.netlify.app/robbinespu) <br> - [VPN IPsec (setup)](https://github.com/RobbiNespu/setup-ipsec-vpn) <br> - [TeX FAQ](https://github.com/RobbiNespu/texfaq.github.io) <br> - [Hosts blackhole](https://github.com/RobbiNespu/blackhosts) <br> - [Create Diagrams That Look Like Hand-drawn](https://excalidraw.com/)
 
  </details>
