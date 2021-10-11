@@ -37,6 +37,6 @@
 |License       | - [Choose a license (appendix)](https://choosealicense.com/appendix/)
 |Awesome collection  | - [Machine learning](https://github.com/josephmisiti/awesome-machine-learning) <br> - [Software engineering on ML](https://github.com/RobbiNespu/awesome-seml) <br> - [Beginner (issues)](https://github.com/MunGell/awesome-for-beginners) <br> - [Math](https://github.com/RobbiNespu/awesome-math) <br> - [Coding interview](https://github.com/RobbiNespu/coding-interview-university) <br> - [Stock resources](https://github.com/RobbiNespu/awesome-stock-resources)
 | Others       |  - [Movies for nerds](https://github.com/RobbiNespu/movies-for-hackers) <br> - [Anime for nerds](https://github.com/RobbiNespu/anime-for-dev) <br> - [Git stalk](https://gitstalk.netlify.app/robbinespu) <br> - [VPN IPsec (setup)](https://github.com/RobbiNespu/setup-ipsec-vpn) <br> - [TeX FAQ](https://github.com/RobbiNespu/texfaq.github.io) <br> - [Hosts blackhole](https://github.com/RobbiNespu/blackhosts) <br> - [Create Diagrams That Look Like Hand-drawn](https://excalidraw.com/)
- | Blogging    | - [Crawl RSS and send webmention](https://github.com/RobbiNespu/send-webmentions
+ | Blogging    | - [Crawl RSS and send webmention](https://github.com/RobbiNespu/send-webmentions)
 
  </details>
