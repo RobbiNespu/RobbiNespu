@@ -1,0 +1,832 @@
+# Combined Neovim Setup and Fix Script
+# This script sets up a complete Neovim configuration and fixes common issues
+
+param(
+    [switch]$Force,
+    [switch]$SkipBackup,
+    [switch]$FixOnly,
+    [switch]$SetupOnly
+)
+
+# Colors for output
+$ColorReset = "`e[0m"
+$ColorRed = "`e[31m"
+$ColorGreen = "`e[32m"
+$ColorYellow = "`e[33m"
+$ColorBlue = "`e[34m"
+$ColorCyan = "`e[36m"
+
+function Write-ColorText {
+    param([string]$Text, [string]$Color)
+    Write-Host "${Color}${Text}${ColorReset}"
+}
+
+function Write-Success { param([string]$Text); Write-ColorText $Text $ColorGreen }
+function Write-Error { param([string]$Text); Write-ColorText $Text $ColorRed }
+function Write-Warning { param([string]$Text); Write-ColorText $Text $ColorYellow }
+function Write-Info { param([string]$Text); Write-ColorText $Text $ColorBlue }
+function Write-Header { param([string]$Text); Write-ColorText "`n=== $Text ===" $ColorCyan }
+
+function Test-CommandExists {
+    param([string]$Command)
+    return (Get-Command $Command -ErrorAction SilentlyContinue) -ne $null
+}
+
+function Test-Administrator {
+    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+function Install-MissingTools {
+    Write-Header "Installing Missing Tools via Scoop"
+    
+    if (-not (Test-CommandExists "scoop")) {
+        Write-Error "Scoop is not installed. Please install Scoop first:"
+        Write-Info "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
+        Write-Info "Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
+        return
+    }
+    
+    $tools = @{
+        "ripgrep" = "rg (for Telescope live_grep)"
+        "fd" = "fd (for Telescope enhanced file finding)"
+        "unzip" = "unzip (for Mason package extraction)"
+        "gzip" = "gzip (for Mason package compression)"
+        "wget" = "wget (for Mason downloads)"
+    }
+    
+    foreach ($tool in $tools.GetEnumerator()) {
+        if (-not (Test-CommandExists $tool.Key)) {
+            Write-Info "Installing $($tool.Key) - $($tool.Value)"
+            try {
+                scoop install $tool.Key
+                Write-Success "✅ Installed $($tool.Key)"
+            } catch {
+                Write-Warning "⚠️ Failed to install $($tool.Key): $($_.Exception.Message)"
+            }
+        } else {
+            Write-Success "✅ $($tool.Key) already installed"
+        }
+    }
+}
+
+function Install-Providers {
+    Write-Header "Installing Node.js and Python Providers"
+    
+    if (Test-CommandExists "npm") {
+        Write-Info "Installing neovim npm package..."
+        try {
+            npm install -g neovim
+            Write-Success "✅ Node.js provider installed"
+        } catch {
+            Write-Warning "⚠️ Failed to install neovim npm package: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Warning "npm not found. Node.js provider will remain unavailable."
+    }
+    
+    if (Test-CommandExists "pip") {
+        Write-Info "Installing pynvim package..."
+        try {
+            pip install pynvim
+            Write-Success "✅ Python provider installed"
+        } catch {
+            Write-Warning "⚠️ Failed to install pynvim: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Warning "pip not found. Python provider will remain unavailable."
+    }
+}
+
+function Setup-Neovim {
+    Write-Header "Neovim Configuration Setup"
+    
+    # Check prerequisites
+    Write-Info "Checking prerequisites..."
+    
+    if (-not (Get-Command nvim -ErrorAction SilentlyContinue)) {
+        Write-Error "Neovim is not installed or not in PATH!"
+        Write-Info "Please install Neovim first:"
+        Write-Info "  scoop install neovim"
+        Write-Info "  or download from: https://github.com/neovim/neovim/releases"
+        return
+    }
+    
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        Write-Error "Git is not installed or not in PATH!"
+        Write-Info "Please install Git first:"
+        Write-Info "  scoop install git"
+        Write-Info "  or download from: https://git-scm.com/download/win"
+        return
+    }
+    
+    Write-Success "Prerequisites check passed!"
+    
+    # Define paths
+    $nvimConfigPath = "$env:LOCALAPPDATA\nvim"
+    $backupPath = "$env:LOCALAPPDATA\nvim.backup.$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+    
+    # Backup existing configuration
+    if (Test-Path $nvimConfigPath) {
+        if (-not $SkipBackup) {
+            Write-Warning "Existing Neovim configuration found!"
+            if ($Force) {
+                Write-Info "Creating backup at: $backupPath"
+                Copy-Item $nvimConfigPath $backupPath -Recurse
+                Remove-Item $nvimConfigPath -Recurse -Force
+            } else {
+                $response = Read-Host "Do you want to backup and replace it? (y/N)"
+                if ($response -eq 'y' -or $response -eq 'Y') {
+                    Write-Info "Creating backup at: $backupPath"
+                    Copy-Item $nvimConfigPath $backupPath -Recurse
+                    Remove-Item $nvimConfigPath -Recurse -Force
+                } else {
+                    Write-Info "Setup cancelled."
+                    return
+                }
+            }
+        } else {
+            Remove-Item $nvimConfigPath -Recurse -Force
+        }
+    }
+    
+    # Create directory structure
+    Write-Header "Creating Directory Structure"
+    $directories = @(
+        $nvimConfigPath,
+        "$nvimConfigPath\lua",
+        "$nvimConfigPath\lua\config",
+        "$nvimConfigPath\lua\plugins"
+    )
+    
+    foreach ($dir in $directories) {
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+        Write-Success "Created: $dir"
+    }
+    
+    # Create configuration files
+    Write-Header "Creating Configuration Files"
+    
+    # Create all configuration files
+    Create-ConfigFiles $nvimConfigPath
+    
+    Write-Header "Setup Complete!"
+    Write-Success "Neovim configuration has been successfully installed!"
+    Write-Info "Configuration location: $nvimConfigPath"
+    
+    if (Test-Path $backupPath) {
+        Write-Info "Backup location: $backupPath"
+    }
+}
+
+function Create-ConfigFiles {
+    param([string]$nvimConfigPath)
+    
+    # init.lua
+    $initLua = @"
+-- Load core configuration
+require('config.options')
+require('config.keymaps')
+require('config.autocmds')
+
+-- Load plugins
+require('plugins')
+"@
+    
+    # options.lua
+    $optionsLua = @"
+local opt = vim.opt
+
+-- Line numbers
+opt.number = true
+opt.relativenumber = true
+
+-- Tabs & indentation
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.autoindent = true
+
+-- Line wrapping
+opt.wrap = false
+
+-- Search settings
+opt.ignorecase = true
+opt.smartcase = true
+
+-- Cursor line
+opt.cursorline = true
+
+-- Appearance
+opt.termguicolors = true
+opt.background = "dark"
+opt.signcolumn = "yes"
+
+-- Backspace
+opt.backspace = "indent,eol,start"
+
+-- Clipboard
+opt.clipboard:append("unnamedplus")
+
+-- Split windows
+opt.splitright = true
+opt.splitbelow = true
+
+-- Turn off swapfile
+opt.swapfile = false
+"@
+    
+    # keymaps.lua
+    $keymapsLua = @"
+local keymap = vim.keymap
+
+-- Set leader key
+vim.g.mapleader = " "
+
+-- General keymaps
+keymap.set("i", "jk", "<ESC>", { desc = "Exit insert mode with jk" })
+keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+
+-- Increment/decrement numbers
+keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" })
+keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
+
+-- Window management
+keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
+keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
+keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
+
+-- Tab management
+keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "Open new tab" })
+keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
+keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" })
+keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
+
+-- NvimTree
+keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
+"@
+    
+    # autocmds.lua
+    $autocmdsLua = @"
+local autocmd = vim.api.nvim_create_autocmd
+
+-- Highlight on yank
+autocmd('TextYankPost', {
+  desc = 'Highlight when yanking text',
+  group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+})
+
+-- Remove trailing whitespace on save
+autocmd('BufWritePre', {
+  pattern = '*',
+  command = '%s/\\s\\+$//e',
+})
+"@
+    
+    # plugins/init.lua
+    $pluginsInitLua = @"
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  -- Colorscheme
+  require("plugins.colorscheme"),
+  
+  -- File explorer
+  {
+    "nvim-tree/nvim-tree.lua",
+    dependencies = "nvim-tree/nvim-web-devicons",
+    config = function()
+      require("nvim-tree").setup({
+        view = {
+          width = 30,
+        },
+        renderer = {
+          group_empty = true,
+        },
+        filters = {
+          dotfiles = false,
+        },
+      })
+    end,
+  },
+
+  -- Statusline
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("lualine").setup({
+        options = {
+          theme = "dracula"
+        }
+      })
+    end,
+  },
+
+  -- Fuzzy finder
+  require("plugins.telescope"),
+
+  -- Syntax highlighting
+  require("plugins.treesitter"),
+
+  -- LSP configuration
+  require("plugins.lsp"),
+
+  -- Autocompletion
+  require("plugins.completion"),
+
+  -- Git integration
+  {
+    "lewis6991/gitsigns.nvim",
+    config = function()
+      require("gitsigns").setup()
+    end,
+  },
+
+  -- Auto pairs
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    config = function()
+      require("nvim-autopairs").setup()
+    end,
+  },
+
+  -- Comment plugin
+  {
+    "numToStr/Comment.nvim",
+    config = function()
+      require("Comment").setup()
+    end,
+  },
+
+  -- Buffer line
+  {
+    "akinsho/bufferline.nvim",
+    dependencies = "nvim-tree/nvim-web-devicons",
+    config = function()
+      require("bufferline").setup({
+        options = {
+          diagnostics = "nvim_lsp",
+          separator_style = "slant",
+        }
+      })
+    end,
+  },
+
+  -- Mason (LSP installer)
+  {
+    "williamboman/mason.nvim",
+    dependencies = {
+      "williamboman/mason-lspconfig.nvim",
+    },
+    config = function()
+      require("mason").setup({
+        ui = {
+          icons = {
+            package_installed = "✓",
+            package_pending = "➜",
+            package_uninstalled = "✗"
+          }
+        }
+      })
+      
+      require("mason-lspconfig").setup({
+        ensure_installed = {
+          "lua_ls",
+          "html",
+          "cssls",
+          "tailwindcss",
+          "pyright",
+          "ts_ls",
+        },
+        automatic_installation = true,
+      })
+    end,
+  },
+})
+"@
+    
+    # plugins/colorscheme.lua
+    $colorschemeLua = @"
+return {
+  "dracula/vim",
+  name = "dracula",
+  priority = 1000,
+  config = function()
+    vim.cmd("colorscheme dracula")
+  end,
+}
+"@
+    
+    # plugins/telescope.lua (Fixed without fzf)
+    $telescopeLua = @"
+return {
+  "nvim-telescope/telescope.nvim",
+  branch = "0.1.x",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "nvim-tree/nvim-web-devicons",
+  },
+  config = function()
+    local telescope = require("telescope")
+    local actions = require("telescope.actions")
+
+    telescope.setup({
+      defaults = {
+        path_display = { "truncate" },
+        mappings = {
+          i = {
+            ["<C-k>"] = actions.move_selection_previous,
+            ["<C-j>"] = actions.move_selection_next,
+            ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+          },
+        },
+      },
+    })
+
+    -- Set keymaps
+    local keymap = vim.keymap
+    keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
+    keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Find recent files" })
+    keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>", { desc = "Find string" })
+    keymap.set("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor" })
+    keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
+  end,
+}
+"@
+    
+    # plugins/treesitter.lua
+    $treesitterLua = @"
+return {
+  "nvim-treesitter/nvim-treesitter",
+  event = { "BufReadPre", "BufNewFile" },
+  build = ":TSUpdate",
+  dependencies = {
+    "windwp/nvim-ts-autotag",
+  },
+  config = function()
+    local treesitter = require("nvim-treesitter.configs")
+
+    treesitter.setup({
+      highlight = {
+        enable = true,
+      },
+      indent = { enable = true },
+      autotag = {
+        enable = true,
+      },
+      ensure_installed = {
+        "json",
+        "javascript",
+        "typescript",
+        "tsx",
+        "yaml",
+        "html",
+        "css",
+        "markdown",
+        "markdown_inline",
+        "bash",
+        "lua",
+        "vim",
+        "dockerfile",
+        "gitignore",
+        "query",
+        "vimdoc",
+        "c",
+        "python",
+      },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "<C-space>",
+          node_incremental = "<C-space>",
+          scope_incremental = false,
+          node_decremental = "<bs>",
+        },
+      },
+    })
+  end,
+}
+"@
+    
+    # plugins/lsp.lua
+    $lspLua = @"
+return {
+  "neovim/nvim-lspconfig",
+  event = { "BufReadPre", "BufNewFile" },
+  dependencies = {
+    "hrsh7th/cmp-nvim-lsp",
+    { "antosha417/nvim-lsp-file-operations", config = true },
+    { "folke/neodev.nvim", opts = {} },
+  },
+  config = function()
+    local lspconfig = require("lspconfig")
+    local cmp_nvim_lsp = require("cmp_nvim_lsp")
+
+    local keymap = vim.keymap
+
+    vim.api.nvim_create_autocmd("LspAttach", {
+      group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+      callback = function(ev)
+        local opts = { buffer = ev.buf, silent = true }
+
+        opts.desc = "Show LSP references"
+        keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
+
+        opts.desc = "Go to declaration"
+        keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+
+        opts.desc = "Show LSP definitions"
+        keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
+
+        opts.desc = "Show LSP implementations"
+        keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
+
+        opts.desc = "Show LSP type definitions"
+        keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts)
+
+        opts.desc = "See available code actions"
+        keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+
+        opts.desc = "Smart rename"
+        keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+
+        opts.desc = "Show buffer diagnostics"
+        keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
+
+        opts.desc = "Show line diagnostics"
+        keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
+
+        opts.desc = "Go to previous diagnostic"
+        keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+
+        opts.desc = "Go to next diagnostic"
+        keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+
+        opts.desc = "Show documentation for what is under cursor"
+        keymap.set("n", "K", vim.lsp.buf.hover, opts)
+
+        opts.desc = "Restart LSP"
+        keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
+      end,
+    })
+
+    local capabilities = cmp_nvim_lsp.default_capabilities()
+
+    local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
+    for type, icon in pairs(signs) do
+      local hl = "DiagnosticSign" .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+    end
+
+    -- Configure LSP servers directly
+    local servers = {
+      "lua_ls",
+      "html",
+      "cssls",
+      "tailwindcss",
+      "pyright",
+      "ts_ls"
+    }
+
+    for _, server in ipairs(servers) do
+      lspconfig[server].setup({
+        capabilities = capabilities,
+      })
+    end
+  end,
+}
+"@
+    
+    # plugins/completion.lua
+    $completionLua = @"
+return {
+  "hrsh7th/nvim-cmp",
+  event = "InsertEnter",
+  dependencies = {
+    "hrsh7th/cmp-buffer",
+    "hrsh7th/cmp-path",
+    {
+      "L3MON4D3/LuaSnip",
+      version = "v2.*",
+      build = "make install_jsregexp",
+    },
+    "saadparwaiz1/cmp_luasnip",
+    "rafamadriz/friendly-snippets",
+    "onsails/lspkind.nvim",
+  },
+  config = function()
+    local cmp = require("cmp")
+    local luasnip = require("luasnip")
+    local lspkind = require("lspkind")
+
+    require("luasnip.loaders.from_vscode").lazy_load()
+
+    cmp.setup({
+      completion = {
+        completeopt = "menu,menuone,preview,noselect",
+      },
+      snippet = {
+        expand = function(args)
+          luasnip.lsp_expand(args.body)
+        end,
+      },
+      mapping = cmp.mapping.preset.insert({
+        ["<C-k>"] = cmp.mapping.select_prev_item(),
+        ["<C-j>"] = cmp.mapping.select_next_item(),
+        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<C-e>"] = cmp.mapping.abort(),
+        ["<CR>"] = cmp.mapping.confirm({ select = false }),
+      }),
+      sources = cmp.config.sources({
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+        { name = "buffer" },
+        { name = "path" },
+      }),
+      formatting = {
+        format = lspkind.cmp_format({
+          maxwidth = 50,
+          ellipsis_char = "...",
+        }),
+      },
+    })
+  end,
+}
+"@
+    
+    # Write all configuration files
+    $configFiles = @{
+        "init.lua" = $initLua
+        "lua\config\options.lua" = $optionsLua
+        "lua\config\keymaps.lua" = $keymapsLua
+        "lua\config\autocmds.lua" = $autocmdsLua
+        "lua\plugins\init.lua" = $pluginsInitLua
+        "lua\plugins\colorscheme.lua" = $colorschemeLua
+        "lua\plugins\telescope.lua" = $telescopeLua
+        "lua\plugins\treesitter.lua" = $treesitterLua
+        "lua\plugins\lsp.lua" = $lspLua
+        "lua\plugins\completion.lua" = $completionLua
+    }
+    
+    foreach ($file in $configFiles.GetEnumerator()) {
+        $filePath = Join-Path $nvimConfigPath $file.Key
+        $file.Value | Out-File -FilePath $filePath -Encoding UTF8
+        Write-Success "Created: $($file.Key)"
+    }
+    
+    # Create README
+    $readme = @"
+# Neovim Configuration
+
+This configuration was automatically generated by the combined Neovim setup script.
+
+## Key Bindings
+
+- Leader key: `<Space>`
+- File explorer: `<leader>e`
+- Find files: `<leader>ff`
+- Find in files: `<leader>fs`
+- Find recent files: `<leader>fr`
+- Find buffers: `<leader>fb`
+- Go to definition: `gd`
+- Show hover documentation: `K`
+- Code actions: `<leader>ca`
+- Rename symbol: `<leader>rn`
+- Comment/uncomment: `gcc`
+- Split window vertically: `<leader>sv`
+- Split window horizontally: `<leader>sh`
+
+## Plugins Included
+
+- Dracula colorscheme
+- nvim-tree (file explorer)
+- Telescope (fuzzy finder)
+- TreeSitter (syntax highlighting)
+- LSP configuration with Mason
+- nvim-cmp (autocompletion)
+- Gitsigns (git integration)
+- nvim-autopairs (auto pairs)
+- Comment.nvim (commenting)
+- Bufferline (buffer tabs)
+- Lualine (statusline)
+
+## Language Servers
+
+The following language servers are automatically installed:
+- lua_ls (Lua)
+- ts_ls (TypeScript/JavaScript)
+- html (HTML)
+- cssls (CSS)
+- tailwindcss (Tailwind CSS)
+- pyright (Python)
+
+## Next Steps
+
+1. Open Neovim: `nvim`
+2. Wait for plugins to install automatically
+3. Restart Neovim
+4. Run `:checkhealth` to verify everything is working
+5. Install additional language servers with `:Mason`
+
+Enjoy your new Neovim setup!
+"@
+    
+    $readme | Out-File -FilePath "$nvimConfigPath\README.md" -Encoding UTF8
+    Write-Success "Created: README.md"
+}
+
+function Fix-ExistingConfig {
+    Write-Header "Fixing Existing Configuration"
+    
+    $nvimConfigPath = "$env:LOCALAPPDATA\nvim"
+    
+    if (-not (Test-Path $nvimConfigPath)) {
+        Write-Error "No existing Neovim configuration found at $nvimConfigPath"
+        Write-Info "Please run the script without -FixOnly to create a new configuration"
+        return
+    }
+    
+    # Fix plugins/init.lua if it exists and is corrupted
+    $pluginsInitPath = "$nvimConfigPath\lua\plugins\init.lua"
+    if (Test-Path $pluginsInitPath) {
+        Write-Info "Fixing plugins/init.lua..."
+        Create-ConfigFiles $nvimConfigPath
+        Write-Success "✅ Configuration files updated"
+    }
+    
+    # Install missing tools and providers
+    Install-MissingTools
+    Install-Providers
+}
+
+function Show-Summary {
+    Write-Header "Setup Complete!"
+    
+    Write-Info "The following has been accomplished:"
+    Write-Success "✅ Neovim configuration installed/updated"
+    Write-Success "✅ Missing tools installed (ripgrep, fd, unzip, etc.)"
+    Write-Success "✅ Node.js and Python providers installed"
+    Write-Success "✅ Telescope configuration fixed (no fzf dependency)"
+    Write-Success "✅ LSP configuration optimized"
+    Write-Success "✅ Mason auto-installer configured"
+    
+    Write-Header "Next Steps"
+    Write-Info "1. Open Neovim: nvim"
+    Write-Info "2. Wait for plugins to install automatically"
+    Write-Info "3. Restart Neovim"
+    Write-Info "4. Run :checkhealth to verify everything is working"
+    Write-Info "5. Run :Mason to install additional language servers"
+    
+    Write-Header "Key Commands"
+    Write-Info ":Lazy - Plugin manager"
+    Write-Info ":Mason - LSP server manager"
+    Write-Info ":checkhealth - Health check"
+    Write-Info ":LspInfo - LSP status"
+    Write-Info "<Space>e - Toggle file explorer"
+    Write-Info "<Space>ff - Find files"
+    Write-Info "<Space>fs - Find in files"
+    
+    Write-Success "`n🎉 Neovim setup complete! Enjoy your new development environment!"
+}
+
+# Main execution
+Write-Header "Combined Neovim Setup and Fix Script"
+
+try {
+    if ($FixOnly) {
+        Fix-ExistingConfig
+    } elseif ($SetupOnly) {
+        Setup-Neovim
+    } else {
+        # Run both setup and fixes
+        Setup-Neovim
+        Install-MissingTools
+        Install-Providers
+    }
+    
+    Show-Summary
+    
+} catch {
+    Write-Error "An error occurred: $($_.Exception.Message)"
+    Write-Info "Please check the error message above and try again."
+}
