@@ -6,7 +6,8 @@ param(
     [switch]$SkipBackup,
     [switch]$FixOnly,
     [switch]$SetupOnly,
-    [switch]$NoCompiler
+    [switch]$NoCompiler,
+    [switch]$RemoveAll
 )
 
 # Colors for output
@@ -840,6 +841,27 @@ return {
   end,
 }
 "@
+    # plugins/minimap.lua
+    $minimapLua = @"
+return {
+  "gorbit99/codewindow.nvim",
+  config = function()
+    local codewindow = require("codewindow")
+    codewindow.setup()
+    codewindow.apply_default_keybinds()
+  end,
+}
+"@
+    # plugins/git.lua
+    $gitLua = @"
+return {
+  'tpope/vim-fugitive',
+  cmd = { 'Git', 'G' },
+  config = function()
+    -- No extra config needed for basic usage
+  end,
+}
+"@
     # Write all configuration files
     $configFiles = @{
         "init.lua" = $initLua
@@ -863,6 +885,10 @@ return {
         "lua\plugins\markdownpreview.lua" = $markdownPreviewLua
         "lua\plugins\contextcomment.lua" = $contextCommentLua
         "lua\plugins\alpha.lua" = $alphaLua
+        # Minimap plugin
+        "lua\plugins\minimap.lua" = $minimapLua
+        # Git plugin
+        "lua\plugins\git.lua" = $gitLua
     }
     
     foreach ($file in $configFiles.GetEnumerator()) {
@@ -1056,6 +1082,17 @@ function Show-CompilerInfo {
 # Main execution
 Write-Header "Ultimate Neovim Setup Script"
 Write-Info "This script will setup a complete Neovim development environment"
+
+if ($RemoveAll) {
+    $nvimConfigPath = "$env:LOCALAPPDATA\nvim"
+    if (Test-Path $nvimConfigPath) {
+        Remove-Item $nvimConfigPath -Recurse -Force
+        Write-Success "All Neovim configuration files and directories have been removed: $nvimConfigPath"
+    } else {
+        Write-Info "No Neovim configuration directory found at $nvimConfigPath. Nothing to remove."
+    }
+    return
+}
 
 try {
     # Show compiler information
