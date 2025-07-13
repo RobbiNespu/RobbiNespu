@@ -744,6 +744,102 @@ return {
 }
 "@
     
+    # plugins/whichkey.lua
+    $whichkeyLua = @"
+return {
+  "folke/which-key.nvim",
+  event = "VeryLazy",
+  config = function()
+    require("which-key").setup()
+  end,
+}
+"@
+    # plugins/indentline.lua
+    $indentlineLua = @"
+return {
+  "lukas-reineke/indent-blankline.nvim",
+  main = "ibl",
+  opts = {},
+}
+"@
+    # plugins/surround.lua
+    $surroundLua = @"
+return {
+  "kylechui/nvim-surround",
+  event = "VeryLazy",
+  config = function()
+    require("nvim-surround").setup()
+  end,
+}
+"@
+    # plugins/todocomments.lua
+    $todocommentsLua = @"
+return {
+  "folke/todo-comments.nvim",
+  dependencies = "nvim-lua/plenary.nvim",
+  config = function()
+    require("todo-comments").setup()
+  end,
+}
+"@
+    # plugins/trouble.lua
+    $troubleLua = @"
+return {
+  "folke/trouble.nvim",
+  dependencies = "nvim-tree/nvim-web-devicons",
+  config = function()
+    require("trouble").setup()
+  end,
+}
+"@
+    # plugins/project.lua
+    $projectLua = @"
+return {
+  "ahmedkhalf/project.nvim",
+  config = function()
+    require("project_nvim").setup()
+  end,
+}
+"@
+    # plugins/autosession.lua
+    $autosessionLua = @"
+return {
+  "rmagatti/auto-session",
+  config = function()
+    require("auto-session").setup()
+  end,
+}
+"@
+    # plugins/markdownpreview.lua
+    $markdownPreviewLua = @"
+return {
+  "iamcco/markdown-preview.nvim",
+  build = "cd app && npm install",
+  ft = { "markdown" },
+  config = function()
+    vim.g.mkdp_auto_start = 1
+  end,
+}
+"@
+    # plugins/contextcomment.lua
+    $contextCommentLua = @"
+return {
+  "JoosepAlviste/nvim-ts-context-commentstring",
+  config = function()
+    require("ts_context_commentstring").setup {}
+  end,
+}
+"@
+    # plugins/alpha.lua
+    $alphaLua = @"
+return {
+  "goolord/alpha-nvim",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
+  config = function()
+    require("alpha").setup(require("alpha.themes.dashboard").config)
+  end,
+}
+"@
     # Write all configuration files
     $configFiles = @{
         "init.lua" = $initLua
@@ -756,6 +852,17 @@ return {
         "lua\plugins\treesitter.lua" = $treesitterLua
         "lua\plugins\lsp.lua" = $lspLua
         "lua\plugins\completion.lua" = $completionLua
+        # New recommended plugins
+        "lua\plugins\whichkey.lua" = $whichkeyLua
+        "lua\plugins\indentline.lua" = $indentlineLua
+        "lua\plugins\surround.lua" = $surroundLua
+        "lua\plugins\todocomments.lua" = $todocommentsLua
+        "lua\plugins\trouble.lua" = $troubleLua
+        "lua\plugins\project.lua" = $projectLua
+        "lua\plugins\autosession.lua" = $autosessionLua
+        "lua\plugins\markdownpreview.lua" = $markdownPreviewLua
+        "lua\plugins\contextcomment.lua" = $contextCommentLua
+        "lua\plugins\alpha.lua" = $alphaLua
     }
     
     foreach ($file in $configFiles.GetEnumerator()) {
@@ -970,6 +1077,13 @@ try {
     Test-CompilerAvailability
     
     Show-Summary
+    
+    # Show config location at the end
+    $nvimConfigPath = "$env:LOCALAPPDATA\nvim"
+    $initLuaPath = Join-Path $nvimConfigPath "init.lua"
+    Write-Header "Neovim Config Location"
+    Write-Info "Your Neovim configuration directory: $nvimConfigPath"
+    Write-Info "Main config file: $initLuaPath"
     
 } catch {
     Write-Error "An error occurred: $($_.Exception.Message)"
