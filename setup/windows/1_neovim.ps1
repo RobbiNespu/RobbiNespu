@@ -189,22 +189,22 @@ function Setup-Neovim {
             Write-Warning "Existing Neovim configuration found!"
             if ($Force) {
                 Write-Info "Creating backup at: $backupPath"
-                Copy-Item $nvimConfigPath $backupPath -Recurse
-                Remove-Item $nvimConfigPath -Recurse -Force
+                    Copy-Item $nvimConfigPath $backupPath -Recurse
+                    Remove-Item $nvimConfigPath -Recurse -Force
             } else {
                 $response = Read-Host "Do you want to backup and replace it? (y/N)"
                 if ($response -eq 'y' -or $response -eq 'Y') {
                     Write-Info "Creating backup at: $backupPath"
-                    Copy-Item $nvimConfigPath $backupPath -Recurse
-                    Remove-Item $nvimConfigPath -Recurse -Force
+                        Copy-Item $nvimConfigPath $backupPath -Recurse
+                        Remove-Item $nvimConfigPath -Recurse -Force
                 } else {
                     Write-Info "Setup cancelled."
                     return
                 }
             }
         } else {
-            Remove-Item $nvimConfigPath -Recurse -Force
-        }
+                Remove-Item $nvimConfigPath -Recurse -Force
+            }
     }
     
     # Create directory structure
@@ -217,8 +217,8 @@ function Setup-Neovim {
     )
     
     foreach ($dir in $directories) {
-        New-Item -ItemType Directory -Path $dir -Force | Out-Null
-        Write-Success "Created: $dir"
+            New-Item -ItemType Directory -Path $dir -Force | Out-Null
+            Write-Success "Created: $dir"
     }
     
     # Create configuration files
@@ -250,7 +250,7 @@ require('config.autocmds')
 require('plugins')
 "@
     
-    # options.lua
+    # options.lua - Enhanced with whitespace visualization
     $optionsLua = @"
 local opt = vim.opt
 
@@ -263,6 +263,7 @@ opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
+opt.smartindent = true
 
 -- Line wrapping
 opt.wrap = false
@@ -291,9 +292,27 @@ opt.splitbelow = true
 
 -- Turn off swapfile
 opt.swapfile = false
+
+-- Whitespace visualization (toggle with <leader>w)
+opt.list = false
+opt.listchars = {
+  tab = '→ ',
+  space = '·',
+  trail = '·',
+  extends = '>',
+  precedes = '<',
+  nbsp = '+'
+}
+
+-- Better diff
+opt.diffopt:append('vertical')
+
+-- Undo
+opt.undofile = true
+opt.undodir = vim.fn.stdpath('data') .. '/undo'
 "@
     
-    # keymaps.lua
+    # keymaps.lua - Enhanced with whitespace toggle and better navigation
     $keymapsLua = @"
 local keymap = vim.keymap
 
@@ -303,6 +322,9 @@ vim.g.mapleader = " "
 -- General keymaps
 keymap.set("i", "jk", "<ESC>", { desc = "Exit insert mode with jk" })
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+
+-- Whitespace visualization toggle
+keymap.set("n", "<leader>w", ":set list!<CR>", { desc = "Toggle whitespace visualization" })
 
 -- Increment/decrement numbers
 keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" })
@@ -314,33 +336,83 @@ keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
 keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
 keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
+-- Window navigation
+keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
+keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to top window" })
+keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
+
 -- Tab management
 keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "Open new tab" })
 keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
 keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" })
 keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
 
+-- Buffer navigation
+keymap.set("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
+keymap.set("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
+
+-- Better indenting
+keymap.set("v", "<", "<gv", { desc = "Indent left" })
+keymap.set("v", ">", ">gv", { desc = "Indent right" })
+
+-- Move text up and down
+keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move text down" })
+keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move text up" })
+
+-- Keep cursor centered when scrolling
+keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down and center" })
+keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center" })
+
 -- NvimTree
 keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
+keymap.set("n", "<leader>ef", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" })
 "@
     
-    # autocmds.lua
+    # autocmds.lua - Enhanced
     $autocmdsLua = @"
 local autocmd = vim.api.nvim_create_autocmd
+local augroup = vim.api.nvim_create_augroup
 
 -- Highlight on yank
 autocmd('TextYankPost', {
   desc = 'Highlight when yanking text',
-  group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
+  group = augroup('highlight-yank', { clear = true }),
   callback = function()
-    vim.highlight.on_yank()
+    vim.highlight.on_yank({ timeout = 200 })
   end,
 })
 
 -- Remove trailing whitespace on save
 autocmd('BufWritePre', {
   pattern = '*',
+  group = augroup('trim-whitespace', { clear = true }),
   command = '%s/\\s\\+$//e',
+})
+
+-- Auto-format on save for specific file types
+autocmd('BufWritePre', {
+  pattern = { '*.lua', '*.py', '*.js', '*.ts', '*.jsx', '*.tsx' },
+  group = augroup('format-on-save', { clear = true }),
+  callback = function()
+    vim.lsp.buf.format({ async = false })
+  end,
+})
+
+-- Close certain windows with 'q'
+autocmd('FileType', {
+  pattern = { 'qf', 'help', 'man', 'lspinfo', 'checkhealth' },
+  group = augroup('close-with-q', { clear = true }),
+  callback = function(event)
+    vim.bo[event.buf].buflisted = false
+    vim.keymap.set('n', 'q', '<cmd>close<cr>', { buffer = event.buf, silent = true })
+  end,
+})
+
+-- Check if file changed outside of vim
+autocmd({ 'FocusGained', 'TermClose', 'TermLeave' }, {
+  group = augroup('checktime', { clear = true }),
+  command = 'checktime',
 })
 "@
     
@@ -374,7 +446,7 @@ require("lazy").setup({
         },
         renderer = {
           group_empty = true,
-        },
+          },
         filters = {
           dotfiles = false,
         },
@@ -790,6 +862,11 @@ return {
   dependencies = "nvim-tree/nvim-web-devicons",
   config = function()
     require("trouble").setup()
+    
+    local keymap = vim.keymap
+    keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { desc = "Toggle Trouble" })
+    keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", { desc = "Workspace diagnostics" })
+    keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", { desc = "Document diagnostics" })
   end,
 }
 "@
@@ -837,7 +914,30 @@ return {
   "goolord/alpha-nvim",
   dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()
-    require("alpha").setup(require("alpha.themes.dashboard").config)
+    local alpha = require("alpha")
+    local dashboard = require("alpha.themes.dashboard")
+
+    dashboard.section.header.val = {
+      "                                                     ",
+      "  ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ",
+      "  ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║ ",
+      "  ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║ ",
+      "  ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║ ",
+      "  ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║ ",
+      "  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ",
+      "                                                     ",
+    }
+
+    dashboard.section.buttons.val = {
+      dashboard.button("f", "  Find file", ":Telescope find_files <CR>"),
+      dashboard.button("e", "  New file", ":ene <BAR> startinsert <CR>"),
+      dashboard.button("r", "  Recent files", ":Telescope oldfiles <CR>"),
+      dashboard.button("s", "  Find text", ":Telescope live_grep <CR>"),
+      dashboard.button("c", "  Config", ":e $MYVIMRC <CR>"),
+      dashboard.button("q", "  Quit", ":qa<CR>"),
+    }
+
+    alpha.setup(dashboard.opts)
   end,
 }
 "@
@@ -905,43 +1005,107 @@ This configuration was automatically generated by the ultimate Neovim setup scri
 
 ## Key Bindings
 
+### General
 - Leader key: `<Space>`
-- File explorer: `<leader>e`
+- Exit insert mode: `jk`
+- Clear search highlights: `<leader>nh`
+- Toggle whitespace visualization: `<leader>w` (NEW!)
+
+### File Management
+- File explorer toggle: `<leader>e`
+- File explorer focus: `<leader>ef`
 - Find files: `<leader>ff`
 - Find in files: `<leader>fs`
 - Find recent files: `<leader>fr`
 - Find buffers: `<leader>fb`
+- Find help: `<leader>fh`
+
+### Window Management
+- Split vertically: `<leader>sv`
+- Split horizontally: `<leader>sh`
+- Make splits equal: `<leader>se`
+- Close split: `<leader>sx`
+- Navigate left: `<C-h>`
+- Navigate down: `<C-j>`
+- Navigate up: `<C-k>`
+- Navigate right: `<C-l>`
+
+### Buffer Navigation
+- Next buffer: `<S-l>`
+- Previous buffer: `<S-h>`
+
+### LSP
 - Go to definition: `gd`
+- Go to declaration: `gD`
 - Show hover documentation: `K`
 - Code actions: `<leader>ca`
 - Rename symbol: `<leader>rn`
-- Comment/uncomment: `gcc`
-- Split window vertically: `<leader>sv`
-- Split window horizontally: `<leader>sh`
+- Show references: `gR`
+- Show implementations: `gi`
+- Next diagnostic: `]d`
+- Previous diagnostic: `[d`
+- Show line diagnostics: `<leader>d`
+- Restart LSP: `<leader>rs`
+
+### Diagnostics
+- Toggle Trouble: `<leader>xx`
+- Workspace diagnostics: `<leader>xw`
+- Document diagnostics: `<leader>xd`
+
+### Editing
+- Comment/uncomment: `gcc` (line), `gc` (visual)
+- Indent left (visual): `<`
+- Indent right (visual): `>`
+- Move text down (visual): `J`
+- Move text up (visual): `K`
+
+### Scrolling
+- Scroll down and center: `<C-d>`
+- Scroll up and center: `<C-u>`
 
 ## Plugins Included
 
-- Dracula colorscheme
-- nvim-tree (file explorer)
-- Telescope (fuzzy finder)
-- TreeSitter (syntax highlighting)
-- LSP configuration with Mason
-- nvim-cmp (autocompletion)
-- Gitsigns (git integration)
-- nvim-autopairs (auto pairs)
-- Comment.nvim (commenting)
-- Bufferline (buffer tabs)
-- Lualine (statusline)
+- **Dracula** - Colorscheme
+- **nvim-tree** - File explorer
+- **Telescope** - Fuzzy finder
+- **TreeSitter** - Syntax highlighting
+- **LSP** - Language server protocol
+- **Mason** - LSP installer
+- **nvim-cmp** - Autocompletion
+- **Gitsigns** - Git integration
+- **nvim-autopairs** - Auto pairs
+- **Comment.nvim** - Commenting
+- **Bufferline** - Buffer tabs
+- **Lualine** - Statusline
+- **Which-Key** - Keybinding hints
+- **indent-blankline** - Indent guides
+- **nvim-surround** - Surround text objects
+- **todo-comments** - Highlight TODO comments
+- **Trouble** - Diagnostics list
+- **Alpha** - Dashboard
 
 ## Language Servers
 
 The following language servers are automatically installed:
-- lua_ls (Lua)
-- ts_ls (TypeScript/JavaScript)
-- html (HTML)
-- cssls (CSS)
-- tailwindcss (Tailwind CSS)
-- pyright (Python)
+- **lua_ls** - Lua
+- **ts_ls** - TypeScript/JavaScript
+- **html** - HTML
+- **cssls** - CSS
+- **tailwindcss** - Tailwind CSS
+- **pyright** - Python
+
+## Whitespace Visualization
+
+NEW! Press `<leader>w` to toggle whitespace visualization:
+- Tabs appear as `→`
+- Spaces appear as `·`
+- Trailing spaces are highlighted
+- Line endings appear as special characters
+
+This is especially useful for:
+- Debugging YAML indentation issues
+- Detecting mixed tabs and spaces
+- Finding trailing whitespace
 
 ## Compiler Support
 
@@ -953,10 +1117,22 @@ This configuration includes automatic C compiler detection for TreeSitter:
 ## Next Steps
 
 1. Open Neovim: `nvim`
-2. Wait for plugins to install automatically
-3. Restart Neovim
+2. Wait for plugins to install automatically (Lazy.nvim will run on first start)
+3. Restart Neovim after initial plugin installation
 4. Run `:checkhealth` to verify everything is working
-5. Run `:Mason` to install additional language servers
+5. Run `:Mason` to check installed language servers
+6. Run `:TSUpdate` to update TreeSitter parsers
+
+## Useful Commands
+
+- `:Lazy` - Plugin manager interface
+- `:Mason` - LSP server manager
+- `:checkhealth` - Health check
+- `:LspInfo` - LSP status
+- `:TSUpdate` - Update TreeSitter parsers
+- `:set list!` - Toggle whitespace visualization
+- `:Telescope` - Open Telescope picker
+- `:Alpha` - Open dashboard
 
 Enjoy your new Neovim setup!
 "@
@@ -980,8 +1156,8 @@ function Fix-ExistingConfig {
     $pluginsInitPath = "$nvimConfigPath\lua\plugins\init.lua"
     if (Test-Path $pluginsInitPath) {
         Write-Info "Fixing plugins/init.lua..."
-        Create-ConfigFiles $nvimConfigPath
-        Write-Success "✅ Configuration files updated"
+    Create-ConfigFiles $nvimConfigPath
+    Write-Success "✅ Configuration files updated"
     }
     
     # Install missing tools and providers
@@ -998,10 +1174,12 @@ function Show-Summary {
     Write-Success "✅ Missing tools installed (ripgrep, fd, unzip, etc.)"
     Write-Success "✅ Node.js and Python providers installed"
     Write-Success "✅ C compiler environment configured"
-    Write-Success "✅ Telescope configuration fixed (no fzf dependency)"
-    Write-Success "✅ TreeSitter with compiler detection"
-    Write-Success "✅ LSP configuration optimized"
-    Write-Success "✅ Mason auto-installer configured"
+    Write-Success "✅ Whitespace visualization enabled (<leader>w)"
+    Write-Success "✅ Enhanced keybindings for better workflow"
+    Write-Success "✅ Improved autocmds and formatting"
+    Write-Success "✅ Better buffer and window navigation"
+    Write-Success "✅ Trouble diagnostics integration"
+    Write-Success "✅ Alpha dashboard with quick actions"
     
     Write-Header "Next Steps"
     Write-Info "1. Open Neovim: nvim"
@@ -1011,15 +1189,16 @@ function Show-Summary {
     Write-Info "5. Run :Mason to install additional language servers"
     Write-Info "6. Run :TSUpdate to update TreeSitter parsers"
     
-    Write-Header "Key Commands"
-    Write-Info ":Lazy - Plugin manager"
-    Write-Info ":Mason - LSP server manager"
-    Write-Info ":checkhealth - Health check"
-    Write-Info ":LspInfo - LSP status"
-    Write-Info ":TSUpdate - Update TreeSitter parsers"
-    Write-Info "<Space>e - Toggle file explorer"
-    Write-Info "<Space>ff - Find files"
-    Write-Info "<Space>fs - Find in files"
+    Write-Header "Key Features"
+    Write-Info "📁 File Explorer: <Space>e"
+    Write-Info "🔍 Find Files: <Space>ff"
+    Write-Info "🔎 Find Text: <Space>fs"
+    Write-Info "👁️  Toggle Whitespace: <Space>w (NEW!)"
+    Write-Info "🐛 Show Diagnostics: <Space>xx"
+    Write-Info "📝 Go to Definition: gd"
+    Write-Info "💡 Code Actions: <Space>ca"
+    Write-Info "✏️  Rename: <Space>rn"
+    Write-Info "💬 Comment: gcc"
     
     Write-Header "Troubleshooting"
     Write-Info "If you encounter C compiler errors:"
