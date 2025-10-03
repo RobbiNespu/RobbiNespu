@@ -1,0 +1,23 @@
+command : 
+git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset %C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %C(bold blue)<%an>%Creset %C(dim white)(%ae)%Creset' --abbrev-commit --date=relative --all"
+
+output:
+PS C:\Users\robbi\OneDrive - save-gaza Print Media Pte Ltd\Desktop\hcom_outbound> git lg
+*   f09df32 - (HEAD -> master, origin/master, origin/HEAD) Merge branch 'develop' (5 minutes ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+|\
+| *   90bb10d - (origin/develop, develop) Merge branch '2025-10-02' into develop (21 minutes ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| |\
+| | * c60b192 - (origin/2025-10-02) fix(docker): update log file path in docker-manage.ps1 for correct access (18 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| | * 1a09e6a - feat(docker): add service status summary to docker-manage.ps1 (18 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| | * 951b41d - feat(docker): enhance logging commands in docker-manage.ps1 (19 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| | * c7d49a4 - chore(env): update environment configuration and dependencies (19 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| | * 2e90ffd - feat(outbox): implement comprehensive outbox system documentation and enhance API logging (23 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| | * 398cfb2 - feat(manual_scan): add file limit functionality to manual scan form (23 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| | * 0ceb3fa - refactor(docker): streamline command execution in docker-compose files (24 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| * | fe40a00 - fix(docker): update log file path in docker-manage.ps1 for correct access (18 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| * | 0e4fde8 - feat(docker): add service status summary to docker-manage.ps1 (18 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| * | b6d1be6 - feat(docker): enhance logging commands in docker-manage.ps1 (19 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| * | e700928 - chore(env): update environment configuration and dependencies (19 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| * | 0c6dd82 - feat(outbox): implement comprehensive outbox system documentation and enhance API logging (23 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| * | 81d9d13 - feat(manual_scan): add file limit functionality to manual scan form (23 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
+| * | 42cfa4c - refactor(docker): streamline command execution in docker-compose files (24 hours ago) <Robbi Nespu (robbi.nespu@save-gaza.com)>
