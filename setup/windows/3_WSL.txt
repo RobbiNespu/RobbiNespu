@@ -1,78 +1,196 @@
- # In an elevated PowerShell session
- Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+================================================================================                                                                            
+                    S E T U P   G U I D E   F O R   D E B I A N              
+================================================================================
+                               >>> Robbi Nespu <<<
+================================================================================
 
-# install Debian as WSL
-wsl --update
-wsl --install --distribution Debian
-
-wsl --list -v # I normally keep Debian as default and docker-desktop
-
-# if there is another disto (eg: Ubuntu), let remove it. We dont need to many Linux distro
-wsl --terminate Ubuntu
-wsl --unregister Ubuntu
-wsl --set-default Debian
-wsl.exe --status
-
-# enter WSL
-wsl
-sudo apt -y update
-sudo apt -y upgrade
-sudo apt -y dist-upgrade # upgrade from Debian 12 to Debian 13
-sudo apt -y autoremove
-sudo sed -i 's/bookworm/trixie/g' /etc/apt/sources.list
-sudo apt -y update
-sudo apt -y full-upgrade
-sudo apt -y autoremove
-sudo apt install git wget htop curl
-
-# install zsh
-sudo apt -y install zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-echo $SHELL
-chsh -s /usr/bin/zsh
-
-# Adding Useful Aliases 
-vi ~/.zshrc
+                                    _____
+                                   /     \
+                                  | () () |
+                                   \  ^  /
+                                    |||||
+                                    |||||
 
 
-alias ll="ls -ltra"
-alias gd="git diff"
-alias gcmsg="git commit -m"
-alias gitc="git checkout"
-alias gitm="git checkout master"
+    [SECTION 1] - INITIAL WSL INSTALLATION
+    ================================================================================
 
-# Installing zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-# Then add zsh-autosuggestions to the plugins setting in ~/.zshrc
-vim ~/.zshrc
+    >> Run PowerShell as Administrator and enable WSL:
 
-# Installing zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-# Then add zsh-syntax-highlighting to the plugins setting in ~/.zshrc
-vim ~/.zshrc
+    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 
-# Powerlevel10k
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-Use your text editor to set the value of ZSH_THEME to "powerlevel10k/powerlevel10k" in ~/.zshrc.
-vim ~/.zshrc
-p10k configure
 
-# copy your SSH key from Windows to WSL,
-# Create .ssh directory in WSL if it doesn't exist
-mkdir -p ~/.ssh
+    >> Install Debian:
 
-# Copy the private key
-cp /mnt/c/Users/<YourWindowsUsername>/.ssh/id_rsa ~/.ssh/
+    wsl --update
+    wsl --install --distribution Debian
 
-# Copy the public key
-cp /mnt/c/Users/<YourWindowsUsername>/.ssh/id_rsa.pub ~/.ssh/
 
-# Set correct permissions (important for SSH to work)
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/id_rsa
-chmod 644 ~/.ssh/id_rsa.pub
-# Copy SSH config (optional)
-If you have an SSH config file:
-bashcp /mnt/c/Users/<YourWindowsUsername>/.ssh/config ~/.ssh/
-chmod 600 ~/.ssh/config
+    >> Check your installation:
 
+    wsl --list -v
+
+
+    >> [OPTIONAL] Remove other distros (like Ubuntu):
+
+    wsl --terminate Ubuntu
+    wsl --unregister Ubuntu
+    wsl --set-default Debian
+    wsl.exe --status
+
+
+    [SECTION 2] - SYSTEM UPDATES
+    ================================================================================
+
+    >> Enter WSL:
+
+    wsl
+
+
+    >> Update your system:
+
+    sudo apt -y update
+    sudo apt -y upgrade
+    sudo apt -y dist-upgrade
+    sudo apt -y autoremove
+
+
+    >> Upgrade Debian 12 (Bookworm) to Debian 13 (Trixie):
+
+    sudo sed -i 's/bookworm/trixie/g' /etc/apt/sources.list
+    sudo apt -y update
+    sudo apt -y full-upgrade
+    sudo apt -y autoremove
+
+
+    >> Install essential tools:
+
+    sudo apt install git wget htop curl
+
+
+    [SECTION 3] - ZSH INSTALLATION
+    ================================================================================
+
+                               _______________
+                              |.------------.|
+                              ||            ||
+                              ||  >_        ||
+                              ||            ||
+                              |+------------+|
+                              +-..--------..-+
+                             .--------------.
+                            / /============\ \
+                           / /==============\ \
+                          /____________________\
+                          \____________________/
+
+
+    >> Install Zsh:
+
+    sudo apt -y install zsh
+
+
+    >> Install Oh My Zsh:
+
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+
+    >> Set Zsh as default shell:
+
+    echo $SHELL
+    chsh -s /usr/bin/zsh
+
+
+    [SECTION 4] - CUSTOMIZE YOUR SHELL
+    ================================================================================
+
+    >> Add aliases (edit ~/.zshrc):
+
+    alias ll="ls -ltra"
+    alias gd="git diff"
+    alias gcmsg="git commit -m"
+    alias gitc="git checkout"
+    alias gitm="git checkout master"
+
+
+    >> Install zsh-autosuggestions:
+
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+
+    >> Install zsh-syntax-highlighting:
+
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+
+    >> Update plugins in ~/.zshrc:
+
+    plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+
+
+    >> Install Powerlevel10k theme:
+
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+
+
+    >> Set theme in ~/.zshrc:
+
+    ZSH_THEME="powerlevel10k/powerlevel10k"
+
+
+    >> Configure Powerlevel10k:
+
+    p10k configure
+
+
+    [SECTION 5] - SSH KEYS FROM WINDOWS
+    ================================================================================
+
+                                  .-.
+                                 (o.o)
+                                  |=|
+                                 __|__
+                               //.=|=.\\
+                              // .=|=. \\
+                              \\ .=|=. //
+                               \\(_=_)//
+                                (:| |:)
+                                 || ||
+                                 () ()
+                                 || ||
+                                 || ||
+                                ==' '==
+
+
+    >> Create SSH directory:
+
+    mkdir -p ~/.ssh
+
+
+    >> Copy your SSH keys (replace YourWindowsUsername):
+
+    cp /mnt/c/Users/YourWindowsUsername/.ssh/id_rsa ~/.ssh/
+    cp /mnt/c/Users/YourWindowsUsername/.ssh/id_rsa.pub ~/.ssh/
+
+
+    >> Set correct permissions:
+
+    chmod 700 ~/.ssh
+    chmod 600 ~/.ssh/id_rsa
+    chmod 644 ~/.ssh/id_rsa.pub
+
+
+    >> [OPTIONAL] Copy SSH config:
+
+    cp /mnt/c/Users/YourWindowsUsername/.ssh/config ~/.ssh/
+    chmod 600 ~/.ssh/config
+
+
+================================================================================
+                              *** SETUP COMPLETE ***
+                                                                                
+                            Enjoy your new Debian WSL!
+                                                                                
+================================================================================
+                    [ EOF ] - End of File - Have a nice day! :-)
+================================================================================
