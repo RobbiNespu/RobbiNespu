@@ -1,10 +1,9 @@
 # In your WSL home directory
 git config --global core.autocrlf input
 git config --global core.eol lf
-```
 
-Add a `.gitattributes` file to your repository:
-```
+
+# Add a `.gitattributes` file to your repository:
 * text=auto eol=lf
 *.sh text eol=lf
 
