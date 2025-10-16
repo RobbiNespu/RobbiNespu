@@ -1,0 +1,21 @@
+# In your WSL home directory
+git config --global core.autocrlf input
+git config --global core.eol lf
+```
+
+Add a `.gitattributes` file to your repository:
+```
+* text=auto eol=lf
+*.sh text eol=lf
+
+# Find all files with CRLF line endings
+find . -type f -exec file {} \; | grep CRLF
+
+# More readable output
+find . -type f -exec file {} \; | grep CRLF | cut -d: -f1
+
+# Save to a file
+find . -type f -exec file {} \; | grep CRLF | cut -d: -f1 > crlf_files.txt
+
+# Find CRLF files and convert them
+find . -type f -exec file {} \; | grep CRLF | cut -d: -f1 | xargs dos2unix
