@@ -8,7 +8,7 @@ git config --global core.eol lf
 
 # Find all files with CRLF line endings
 find . -type f -exec file {} \; | grep CRLF | cut -d: -f1
-git ls-files -z | xargs -0 file | grep CRLF | cut -d: -f1
+git ls-files -z | grep -zv '\.ps1$' | xargs -0 file | grep CRLF | cut -d: -f1
 
 # Find CRLF files and convert them
-git ls-files -z | xargs -0 file | grep CRLF | cut -d: -f1 | xargs dos2unix
+git ls-files -z | grep -zv '\.ps1$' | xargs -0 file | grep CRLF | cut -d: -f1 | xargs dos2unix
