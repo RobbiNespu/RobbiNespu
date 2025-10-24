@@ -14,7 +14,7 @@
 #                                                                              #
 ################################################################################
 
-set -e  # Exit on error
+set -euo pipefail  # Exit on error, undefined vars, and pipe failures
 
 # Colors for output
 RED='\033[0;31m'
@@ -22,6 +22,11 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+# Logging
+LOG_FILE="${HOME}/.zsh_setup_$(date +%Y%m%d_%H%M%S).log"
+exec 1> >(tee -a "$LOG_FILE")
+exec 2>&1
 
 ################################################################################
 # Helper Functions
@@ -48,11 +53,7 @@ print_info() {
 }
 
 check_command() {
-    if command -v $1 &> /dev/null; then
-        return 0
-    else
-        return 1
-    fi
+    command -v "$1" &> /dev/null
 }
 
 ################################################################################
@@ -61,90 +62,169 @@ check_command() {
 
 install_zsh() {
     print_banner "STEP 1: Installing Zsh"
-    
+
     if check_command zsh; then
         print_info "Zsh is already installed!"
-        zsh --version
+        zsh --version || print_error "Failed to get zsh version"
     else
         print_info "Installing Zsh..."
-        sudo apt update
-        sudo apt install -y zsh
-        print_success "Zsh installed successfully!"
+        sudo apt update || { print_error "Failed to update package lists"; return 1; }
+        sudo apt install -y zsh || { print_error "Failed to install zsh"; return 1; }
+
+        # Verify installation
+        if check_command zsh; then
+            print_success "Zsh installed successfully!"
+            zsh --version
+        else
+            print_error "Zsh installation verification failed"
+            return 1
+        fi
     fi
 }
 
 install_ohmyzsh() {
     print_banner "STEP 2: Installing Oh My Zsh"
-    
+
     if [ -d "$HOME/.oh-my-zsh" ]; then
         print_info "Oh My Zsh is already installed!"
     else
         print_info "Installing Oh My Zsh..."
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-        print_success "Oh My Zsh installed successfully!"
+
+        # Check if curl is available
+        if ! check_command curl; then
+            print_error "curl is required but not installed"
+            print_info "Installing curl..."
+            sudo apt install -y curl || { print_error "Failed to install curl"; return 1; }
+        fi
+
+        if sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended 2>&1; then
+            # Verify installation
+            if [ -d "$HOME/.oh-my-zsh" ]; then
+                print_success "Oh My Zsh installed successfully!"
+            else
+                print_error "Oh My Zsh installation verification failed"
+                return 1
+            fi
+        else
+            print_error "Failed to install Oh My Zsh"
+            return 1
+        fi
     fi
 }
 
 install_plugins() {
     print_banner "STEP 3: Installing Zsh Plugins"
-    
+
+    local zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+    # Check if git is available
+    if ! check_command git; then
+        print_error "git is required but not installed"
+        print_info "Installing git..."
+        sudo apt install -y git || { print_error "Failed to install git"; return 1; }
+    fi
+
     # Install zsh-autosuggestions
-    if [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
+    local autosuggestions_dir="${zsh_custom}/plugins/zsh-autosuggestions"
+    if [ -d "$autosuggestions_dir" ]; then
         print_info "zsh-autosuggestions already installed!"
     else
         print_info "Installing zsh-autosuggestions..."
-        git clone https://github.com/zsh-users/zsh-autosuggestions \
-            ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-        print_success "zsh-autosuggestions installed!"
+        if git clone https://github.com/zsh-users/zsh-autosuggestions "$autosuggestions_dir" 2>&1; then
+            print_success "zsh-autosuggestions installed!"
+        else
+            print_error "Failed to install zsh-autosuggestions"
+            return 1
+        fi
     fi
-    
+
     # Install zsh-syntax-highlighting
-    if [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]; then
+    local syntax_dir="${zsh_custom}/plugins/zsh-syntax-highlighting"
+    if [ -d "$syntax_dir" ]; then
         print_info "zsh-syntax-highlighting already installed!"
     else
         print_info "Installing zsh-syntax-highlighting..."
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-            ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-        print_success "zsh-syntax-highlighting installed!"
+        if git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$syntax_dir" 2>&1; then
+            print_success "zsh-syntax-highlighting installed!"
+        else
+            print_error "Failed to install zsh-syntax-highlighting"
+            return 1
+        fi
     fi
 }
 
 install_powerlevel10k() {
     print_banner "STEP 4: Installing Powerlevel10k Theme"
-    
-    if [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
+
+    local zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+    local p10k_dir="${zsh_custom}/themes/powerlevel10k"
+
+    if [ -d "$p10k_dir" ]; then
         print_info "Powerlevel10k already installed!"
     else
         print_info "Installing Powerlevel10k..."
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-            ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-        print_success "Powerlevel10k installed!"
+        if git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$p10k_dir" 2>&1; then
+            print_success "Powerlevel10k installed!"
+        else
+            print_error "Failed to install Powerlevel10k"
+            return 1
+        fi
     fi
 }
 
 configure_zshrc() {
     print_banner "STEP 5: Configuring .zshrc"
-    
-    ZSHRC="$HOME/.zshrc"
-    
-    # Backup existing .zshrc
-    if [ -f "$ZSHRC" ]; then
-        cp "$ZSHRC" "$ZSHRC.backup.$(date +%Y%m%d_%H%M%S)"
-        print_info "Backed up existing .zshrc"
+
+    local zshrc="$HOME/.zshrc"
+
+    # Check if .zshrc exists
+    if [ ! -f "$zshrc" ]; then
+        print_error ".zshrc not found at $zshrc"
+        print_info "Oh My Zsh installation may have failed"
+        return 1
     fi
-    
+
+    # Backup existing .zshrc
+    local backup_file="${zshrc}.backup.$(date +%Y%m%d_%H%M%S)"
+    if cp "$zshrc" "$backup_file" 2>&1; then
+        print_info "Backed up existing .zshrc to $backup_file"
+    else
+        print_error "Failed to backup .zshrc"
+        return 1
+    fi
+
     # Update theme
     print_info "Setting Powerlevel10k theme..."
-    sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$ZSHRC"
-    
+    if grep -q "^ZSH_THEME=" "$zshrc"; then
+        sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$zshrc" || {
+            print_error "Failed to update ZSH_THEME"
+            return 1
+        }
+    else
+        echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$zshrc" || {
+            print_error "Failed to add ZSH_THEME"
+            return 1
+        }
+    fi
+
     # Update plugins
     print_info "Enabling plugins..."
-    sed -i 's/^plugins=.*/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$ZSHRC"
-    
+    if grep -q "^plugins=" "$zshrc"; then
+        sed -i 's/^plugins=.*/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$zshrc" || {
+            print_error "Failed to update plugins"
+            return 1
+        }
+    else
+        echo "plugins=(git zsh-autosuggestions zsh-syntax-highlighting)" >> "$zshrc" || {
+            print_error "Failed to add plugins"
+            return 1
+        }
+    fi
+
     # Add custom aliases if not already present
     print_info "Adding custom aliases..."
-    if ! grep -q "# Custom aliases added by setup script" "$ZSHRC"; then
-        cat >> "$ZSHRC" << 'EOF'
+    if ! grep -q "# Custom aliases added by setup script" "$zshrc"; then
+        cat >> "$zshrc" << 'EOF'
 
 # Custom aliases added by setup script
 alias ll="ls -ltra"
@@ -153,21 +233,37 @@ alias gcmsg="git commit -m"
 alias gitc="git checkout"
 alias gitm="git checkout master"
 EOF
+        if [ $? -eq 0 ]; then
+            print_success "Custom aliases added!"
+        else
+            print_error "Failed to add custom aliases"
+            return 1
+        fi
+    else
+        print_info "Custom aliases already present in .zshrc"
     fi
-    
+
     print_success ".zshrc configured successfully!"
 }
 
 set_default_shell() {
     print_banner "STEP 6: Setting Zsh as Default Shell"
-    
-    if [ "$SHELL" = "$(which zsh)" ]; then
+
+    local zsh_path
+    zsh_path="$(command -v zsh)" || { print_error "zsh command not found"; return 1; }
+
+    if [ "$SHELL" = "$zsh_path" ]; then
         print_info "Zsh is already your default shell!"
     else
-        print_info "Changing default shell to Zsh..."
-        chsh -s $(which zsh)
-        print_success "Default shell changed to Zsh!"
-        print_info "You'll need to log out and log back in for this to take effect."
+        print_info "Changing default shell to Zsh at $zsh_path..."
+        if chsh -s "$zsh_path" 2>&1; then
+            print_success "Default shell changed to Zsh!"
+            print_info "You'll need to log out and log back in for this to take effect."
+        else
+            print_error "Failed to change default shell"
+            print_info "You can manually run: chsh -s $zsh_path"
+            return 1
+        fi
     fi
 }
 
@@ -211,14 +307,37 @@ EOF
         exit 1
     fi
     
-    # Run installation steps
-    install_zsh
-    install_ohmyzsh
-    install_plugins
-    install_powerlevel10k
-    configure_zshrc
-    set_default_shell
-    
+    # Run installation steps with error handling
+    if ! install_zsh; then
+        print_error "Zsh installation failed"
+        return 1
+    fi
+
+    if ! install_ohmyzsh; then
+        print_error "Oh My Zsh installation failed"
+        return 1
+    fi
+
+    if ! install_plugins; then
+        print_error "Plugin installation failed"
+        return 1
+    fi
+
+    if ! install_powerlevel10k; then
+        print_error "Powerlevel10k installation failed"
+        return 1
+    fi
+
+    if ! configure_zshrc; then
+        print_error ".zshrc configuration failed"
+        return 1
+    fi
+
+    if ! set_default_shell; then
+        print_error "Setting default shell failed"
+        print_info "You may need to manually set zsh as your default shell"
+    fi
+
     # Final message
     print_banner "INSTALLATION COMPLETE!"
     
@@ -246,6 +365,8 @@ EOF
     echo "  3. Enjoy your new shell!"
     echo ""
     print_info "Your old .zshrc has been backed up with a timestamp."
+    echo ""
+    print_info "Setup log saved to: $LOG_FILE"
     echo ""
     echo "=============================================================================="
     echo -e "${BLUE}                     [ Press ENTER to exit ]${NC}"
