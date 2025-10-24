@@ -2,7 +2,7 @@
 
 # Ultimate Neovim Setup Script for Debian 13
 # This script sets up a complete Neovim configuration, fixes common issues, and handles C compiler setup
-# Requirements: Neovim 0.11+ (for nvim-lspconfig compatibility)
+# Requirements: Neovim 0.10+ (compatible with 0.10.x through 0.11+)
 
 # Colors for output
 COLOR_RESET='\033[0m'
@@ -665,7 +665,7 @@ return {
     end,
   },
 
-  -- LSP Configuration (requires Nvim 0.11+)
+  -- LSP Configuration (compatible with Nvim 0.10+ through 0.11+)
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
@@ -729,45 +729,17 @@ return {
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
       end
 
-      -- Configure LSP servers (Nvim 0.11+ compatible)
-      local servers = {
-        lua_ls = {
-          settings = {
-            Lua = {
-              diagnostics = {
-                globals = { "vim" },
-              },
-              workspace = {
-                library = {
-                  [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                  [vim.fn.stdpath("config") .. "/lua"] = true,
-                },
-              },
-            },
-          },
-        },
-        ts_ls = {},
-        html = {},
-        cssls = {},
-        tailwindcss = {},
-        pyright = {},
-      }
-
-      for server, config in pairs(servers) do
-        lspconfig[server].setup(vim.tbl_extend("force", {
-          capabilities = capabilities,
-          on_attach = on_attach,
-        }, config))
-      end
+      -- Store on_attach and capabilities globally for mason-lspconfig to use
+      vim.g.lsp_on_attach = on_attach
+      vim.g.lsp_capabilities = capabilities
     end,
   },
 
   -- Mason for LSP server management
   {
     "williamboman/mason.nvim",
-    dependencies = {
-      "williamboman/mason-lspconfig.nvim",
-    },
+    cmd = "Mason",
+    build = ":MasonUpdate",
     config = function()
       require("mason").setup({
         ui = {
@@ -778,8 +750,21 @@ return {
           },
         },
       })
+    end,
+  },
 
-      require("mason-lspconfig").setup({
+  -- Mason-lspconfig for automatic setup
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "neovim/nvim-lspconfig",
+    },
+    config = function()
+      local mason_lspconfig = require("mason-lspconfig")
+      local lspconfig = require("lspconfig")
+
+      mason_lspconfig.setup({
         ensure_installed = {
           "lua_ls",
           "ts_ls",
@@ -788,7 +773,37 @@ return {
           "tailwindcss",
           "pyright",
         },
-        automatic_installation = true,
+        automatic_installation = false,
+      })
+
+      -- Setup each server with the common config
+      -- Compatible with Nvim 0.10+ and 0.11+
+      mason_lspconfig.setup_handlers({
+        function(server_name)
+          local config = {
+            capabilities = vim.g.lsp_capabilities,
+            on_attach = vim.g.lsp_on_attach,
+          }
+
+          -- Special handling for lua_ls
+          if server_name == "lua_ls" then
+            config.settings = {
+              Lua = {
+                diagnostics = {
+                  globals = { "vim" },
+                },
+                workspace = {
+                  library = {
+                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                    [vim.fn.stdpath("config") .. "/lua"] = true,
+                  },
+                },
+              },
+            }
+          end
+
+          lspconfig[server_name].setup(config)
+        end,
       })
     end,
   },
