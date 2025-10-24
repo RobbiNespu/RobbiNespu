@@ -213,14 +213,14 @@ install_providers() {
     
     if test_command_exists "pip3"; then
         write_info "Installing pynvim package..."
-        if pip3 install --user pynvim; then
+        if pip3 install --user pynvim --break-system-packages; then
             write_success "✅ Python provider installed"
         else
             write_warning "⚠️ Failed to install pynvim"
         fi
     elif test_command_exists "pip"; then
         write_info "Installing pynvim package..."
-        if pip install --user pynvim; then
+        if pip install --user pynvim --break-system-packages; then
             write_success "✅ Python provider installed"
         else
             write_warning "⚠️ Failed to install pynvim"
@@ -234,7 +234,7 @@ install_providers() {
         fi
         
         if test_command_exists "pip3"; then
-            pip3 install --user pynvim
+            pip3 install --user pynvim --break-system-packages
             write_success "✅ Python provider installed"
         else
             write_warning "Failed to install pip. Python provider will remain unavailable."
@@ -1344,8 +1344,8 @@ test_compiler_availability
 show_summary
 
 # Show config location at the end
-local nvim_config_path="$HOME/.config/nvim"
-local init_lua_path="$nvim_config_path/init.lua"
+nvim_config_path="$HOME/.config/nvim"
+init_lua_path="$nvim_config_path/init.lua"
 write_header "Neovim Config Location"
 write_info "Your Neovim configuration directory: $nvim_config_path"
 write_info "Main config file: $init_lua_path"
