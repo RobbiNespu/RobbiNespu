@@ -2,6 +2,7 @@
 
 # Ultimate Neovim Setup Script for Debian 13
 # This script sets up a complete Neovim configuration, fixes common issues, and handles C compiler setup
+# Requirements: Neovim 0.11+ (for nvim-lspconfig compatibility)
 
 # Colors for output
 COLOR_RESET='\033[0m'
@@ -664,7 +665,7 @@ return {
     end,
   },
 
-  -- LSP Configuration
+  -- LSP Configuration (requires Nvim 0.11+)
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
@@ -728,49 +729,36 @@ return {
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
       end
 
-      -- Configure LSP servers
-      lspconfig["lua_ls"].setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
-        settings = {
-          Lua = {
-            diagnostics = {
-              globals = { "vim" },
-            },
-            workspace = {
-              library = {
-                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                [vim.fn.stdpath("config") .. "/lua"] = true,
+      -- Configure LSP servers (Nvim 0.11+ compatible)
+      local servers = {
+        lua_ls = {
+          settings = {
+            Lua = {
+              diagnostics = {
+                globals = { "vim" },
+              },
+              workspace = {
+                library = {
+                  [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                  [vim.fn.stdpath("config") .. "/lua"] = true,
+                },
               },
             },
           },
         },
-      })
+        ts_ls = {},
+        html = {},
+        cssls = {},
+        tailwindcss = {},
+        pyright = {},
+      }
 
-      lspconfig["ts_ls"].setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
-      })
-
-      lspconfig["html"].setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
-      })
-
-      lspconfig["cssls"].setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
-      })
-
-      lspconfig["tailwindcss"].setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
-      })
-
-      lspconfig["pyright"].setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
-      })
+      for server, config in pairs(servers) do
+        lspconfig[server].setup(vim.tbl_extend("force", {
+          capabilities = capabilities,
+          on_attach = on_attach,
+        }, config))
+      end
     end,
   },
 
