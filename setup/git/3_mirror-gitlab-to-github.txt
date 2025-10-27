@@ -1,0 +1,20 @@
+References : https://stackoverflow.com/a/78711034
+
+Method with Fine-grained personal access token works!
+====================================================
+Then I found this link on how to Set up a push mirror from GitLab to GitHub that was linked in the official GitLab docs, but has different instructions (facepalm). 
+So I followed that and if finally worked! 
+
+The only downside is that the Fine-grained personal access tokens must have an expiration date (at the moment I could only set it max to a year). 
+
+That means in a year, I will have to deal with this again. And I am sure I won't remember any of this happened :) For completeness, here are the steps:
+
+    1. Create a new GitHub repo where you want to mirror your GitLab repo.
+    2. Go to GitHub > Settings > Developer Settings > Personal access tokens > Fine-grained tokens > Generate new token
+    3. Restrict the token to apply only for your new repository and in Repository permissions, give it a read&write access on Contents.
+    4. Generate the token and copy it.
+    5. Go to GitLab repo > Settings > Repository > Mirroring repositories > Add new mirror
+    6. Paste the full https url of your GitHub repo, e.g. https://github.com/user/repo
+    7. Fill in your GitHub username and as a password, use the fine-grained token you copied earlier
+    8. Click on Mirror repository
+    9. Click on Update now
